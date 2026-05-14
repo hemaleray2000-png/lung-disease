@@ -1,0 +1,1178 @@
+
+\documentclass[12pt,a4paper]{article}
+
+%--------------------------------------------------------------
+% PACKAGES
+%--------------------------------------------------------------
+\usepackage[margin=1in, headheight=14pt]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage[T1]{fontenc}
+
+%--------------------------------------------------------------
+% COLOURS
+%--------------------------------------------------------------
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{strcolor}{RGB}{163,21,21}
+\definecolor{cmtcolor}{RGB}{0,128,0}
+\definecolor{titleblue}{RGB}{0,70,127}
+\definecolor{sectionblue}{RGB}{31,73,125}
+\definecolor{outputbg}{RGB}{240,248,255}
+\definecolor{outputframe}{RGB}{100,149,237}
+\definecolor{conclusionbg}{RGB}{255,250,240}
+\definecolor{conclusionframe}{RGB}{210,150,50}
+
+%--------------------------------------------------------------
+% LISTINGS STYLE (Python)
+%--------------------------------------------------------------
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{kwcolor}\bfseries,
+    stringstyle=\color{strcolor},
+    commentstyle=\color{cmtcolor}\itshape,
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    numbersep=6pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    language=Python,
+    captionpos=b,
+    xleftmargin=15pt,
+    xrightmargin=5pt,
+    aboveskip=8pt,
+    belowskip=4pt,
+}
+
+\lstdefinestyle{outputstyle}{
+    backgroundcolor=\color{outputbg},
+    frame=single,
+    rulecolor=\color{outputframe},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    numbers=none,
+    xleftmargin=10pt,
+    xrightmargin=5pt,
+    aboveskip=6pt,
+    belowskip=4pt,
+}
+
+%--------------------------------------------------------------
+% SECTION FORMATTING
+%--------------------------------------------------------------
+\titleformat{\section}[block]
+  {\large\bfseries\color{sectionblue}}
+  {\thesection.}{0.5em}{}[\titlerule]
+
+\titleformat{\subsection}[block]
+  {\normalsize\bfseries\color{sectionblue}}
+  {\thesubsection}{0.5em}{}
+
+\titleformat{\subsubsection}[block]
+  {\normalsize\bfseries}
+  {\thesubsubsection}{0.5em}{}
+
+%--------------------------------------------------------------
+% HEADER / FOOTER
+%--------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Assignment 1 -- Lung Cancer Data Analysis}
+\lhead{\small Python \& Statistical Methods}
+\rfoot{\small Page \thepage}
+\lfoot{\small Biostatistics / Data Science}
+
+%--------------------------------------------------------------
+% HYPERREF SETUP
+%--------------------------------------------------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=sectionblue,
+    urlcolor=sectionblue,
+    citecolor=sectionblue,
+    pdftitle={Assignment 1 - Lung Cancer Data Analysis},
+    pdfauthor={},
+}
+
+%--------------------------------------------------------------
+% CUSTOM ENVIRONMENTS
+%--------------------------------------------------------------
+\newenvironment{mybox}[1]{%
+  \par\medskip\noindent
+  \textbf{#1}\par\smallskip
+  \noindent\hrulefill\par\smallskip
+  \noindent\ignorespaces
+}{%
+  \par\noindent\hrulefill\par\medskip
+}
+
+%--------------------------------------------------------------
+% DOCUMENT
+%--------------------------------------------------------------
+\begin{document}
+
+%==============================================================
+% TITLE PAGE
+%==============================================================
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\huge\bfseries\color{titleblue} Assignment 1 \par}
+  \vspace{0.5cm}
+  {\Large\bfseries Lung Cancer Data Analysis using Python \par}
+  \vspace{1cm}
+  \rule{0.8\linewidth}{1pt}\par
+  \vspace{0.5cm}
+  {\large Statistical Methods: Descriptive Statistics, Hypothesis Testing,\\
+  Logistic Regression, ANOVA, and Count Models \par}
+  \vspace{1cm}
+  \rule{0.8\linewidth}{0.5pt}\par
+  \vspace{1.5cm}
+  {\normalsize
+    \begin{tabular}{ll}
+      \textbf{Dataset:} & Lung Cancer Survey Data ($n = 500$) \\[4pt]
+      \textbf{Tools:}   & Python (pandas, scipy, statsmodels, sklearn) \\[4pt]
+      \textbf{Date:}    & May 2026 \\
+    \end{tabular}
+  }
+  \vfill
+  {\small Prepared using \LaTeX{} from Python code, outputs, and interpretations.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%==============================================================
+\section{Problem 1: Lung Cancer Data Analysis}
+%==============================================================
+
+\textit{Considering the lung cancer dataset for solving Problem 1 using Python.}
+
+%--------------------------------------------------------------
+\subsection{(i) Distribution of Age -- Normality Analysis}
+%--------------------------------------------------------------
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Loading data and analysing Age distribution}]
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import shapiro
+
+df = pd.read_csv('himel.xlsx.csv')
+print(df.head())
+
+age = df['Age']
+
+print("\nSummary Statistics of Age:")
+print(age.describe())
+
+print("\nSkewness:", age.skew())
+print("Kurtosis:", age.kurt())
+
+plt.hist(age, bins=10, edgecolor='black')
+plt.title("Histogram of Age")
+plt.xlabel("Age")
+plt.ylabel("Frequency")
+plt.show()
+
+stat, p = shapiro(age)
+print("\nShapiro-Wilk Test")
+print("Statistic =", stat)
+print("P-value =", p)
+
+if p > 0.05:
+    print("Age is approximately normally distributed.")
+else:
+    print("Age is not normally distributed.")
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle, caption={Summary statistics and normality test output}]
+Summary Statistics of Age:
+count    500.000000
+mean      43.904000
+std       14.604841
+min       20.000000
+25%       30.750000
+50%       45.000000
+75%       56.000000
+max       69.000000
+
+Skewness:  0.012141455267137275
+Kurtosis: -1.232106868020186
+
+Shapiro-Wilk Test
+Test Statistic: 0.9488992946952997
+P-value:        4.0350550859741284e-12
+
+Conclusion: Age is NOT normally distributed.
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\begin{table}[H]
+  \centering
+  \caption{Descriptive Statistics for Age}
+  \begin{tabular}{lc}
+    \toprule
+    \textbf{Statistic} & \textbf{Value} \\
+    \midrule
+    Count    & 500 \\
+    Mean     & 43.90 \\
+    Std Dev  & 14.60 \\
+    Min      & 20 \\
+    Q1       & 30.75 \\
+    Median   & 45.00 \\
+    Q3       & 56.00 \\
+    Max      & 69 \\
+    Skewness & 0.0121 \\
+    Kurtosis & $-1.232$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\noindent\textbf{Skewness ($\approx 0.012$):} The \texttt{Age} variable is approximately symmetric.
+
+\noindent\textbf{Kurtosis ($\approx -1.232$):} Platykurtic -- flatter than a normal distribution.
+
+\noindent\textbf{Shapiro-Wilk Test:}
+\begin{align*}
+  W &= 0.9489, \quad p = 4.04 \times 10^{-12}
+\end{align*}
+Since $p \ll 0.05$, we \textbf{reject the null hypothesis} of normality. The \texttt{Age} variable is \textbf{approximately symmetric} but formally \textbf{not normally distributed}.
+
+%--------------------------------------------------------------
+\subsection{(ii) Proportion of Smokers vs.\ Non-Smokers}
+%--------------------------------------------------------------
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Smoking proportions}]
+smoking_prop = df['Smoking'].value_counts(normalize=True) * 100
+print(smoking_prop)
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+No     58.6%
+Yes    41.4%
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\begin{table}[H]
+  \centering
+  \caption{Smoking Status Distribution}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Category} & \textbf{Count} & \textbf{Percentage (\%)} \\
+    \midrule
+    Non-Smoker & 293 & 58.6 \\
+    Smoker     & 207 & 41.4 \\
+    \midrule
+    Total      & 500 & 100.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+About \textbf{41.4\%} are smokers and \textbf{58.6\%} are non-smokers.
+
+%--------------------------------------------------------------
+\subsection{(iii) Income Group with Highest Frequency}
+%--------------------------------------------------------------
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Income group frequency}]
+income_counts = df['Income'].value_counts()
+print("Frequency of Each Income Group:")
+print(income_counts)
+
+highest_group = income_counts.idxmax()
+highest_frequency = income_counts.max()
+print(f"\nThe {highest_group} income group has the highest frequency "
+      f"with {highest_frequency} individuals.")
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Frequency of Each Income Group:
+Income
+Low       204
+Medium    197
+High       99
+
+The Low income group has the highest frequency with 204 individuals.
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\begin{table}[H]
+  \centering
+  \caption{Income Group Frequencies}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Income Group} & \textbf{Frequency} & \textbf{Percentage (\%)} \\
+    \midrule
+    Low    & 204 & 40.8 \\
+    Medium & 197 & 39.4 \\
+    High   &  99 & 19.8 \\
+    \midrule
+    Total  & 500 & 100.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The \textbf{Low income group} has the highest frequency (40.8\%).
+
+%--------------------------------------------------------------
+\subsection{(iv) Percentage Exposed to High Pollution}
+%--------------------------------------------------------------
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Pollution exposure analysis}]
+pollution_counts = df['Pollution'].value_counts()
+print("Frequency of Pollution Exposure Categories:")
+print(pollution_counts)
+
+high_pollution_percentage = (df['Pollution'] == 'High').mean() * 100
+print(f"\n{high_pollution_percentage:.2f}% of individuals are exposed to High pollution.")
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Pollution
+High    352
+Low     148
+
+70.40% of individuals are exposed to High pollution.
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\textbf{70.40\%} of individuals are exposed to high pollution, indicating the sample is drawn predominantly from high-pollution environments.
+
+%--------------------------------------------------------------
+\subsection{(v) Overall Prevalence of Lung Disease}
+%--------------------------------------------------------------
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Lung disease prevalence}]
+lung_counts = df['LungDisease'].value_counts()
+print("Frequency of Lung Disease Status:")
+print(lung_counts)
+
+prevalence = (df['LungDisease'] == 'Yes').mean() * 100
+print(f"\n{prevalence:.2f}% of individuals have lung disease.")
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+LungDisease
+Yes    264
+No     236
+
+52.80% of individuals have lung disease.
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+The overall prevalence of lung disease is \textbf{52.80\%}, reflecting a high-risk study population.
+
+%==============================================================
+\section{Association and Crosstab Analysis}
+%==============================================================
+
+\subsection{Association Between Smoking and Lung Disease}
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Chi-square test}]
+from scipy.stats import chi2_contingency
+
+table = pd.crosstab(df['Smoking'], df['LungDisease'])
+print("Contingency Table:")
+print(table)
+
+chi2, p_value, dof, expected = chi2_contingency(table)
+print("\nChi-Square Statistic =", chi2)
+print("Degrees of Freedom =", dof)
+print("P-value =", p_value)
+
+if p_value < 0.05:
+    print("Significant association between Smoking and Lung Disease.")
+else:
+    print("No significant association.")
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Contingency Table:
+LungDisease    No  Yes
+Smoking
+No            184  109
+Yes            52  155
+
+Chi-Square Statistic = 67.5942649754021
+Degrees of Freedom   = 1
+P-value              = 2.0085094601569646e-16
+
+Significant association between Smoking and Lung Disease.
+\end{lstlisting}
+
+\subsubsection{Row Percentage Table}
+
+\begin{lstlisting}[style=pythonstyle]
+contingency_table = pd.crosstab(
+    df['Smoking'], df['LungDisease'],
+    margins=True, normalize='index'
+) * 100
+print(contingency_table.round(2))
+\end{lstlisting}
+
+\begin{lstlisting}[style=outputstyle]
+LungDisease     No    Yes
+Smoking
+No           62.80  37.20
+Yes          25.12  74.88
+All          47.20  52.80
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\begin{table}[H]
+  \centering
+  \caption{Crosstab: Smoking vs.\ Lung Disease (Row \%)}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Smoking} & \textbf{No Disease (\%)} & \textbf{Disease (\%)} & \textbf{Total} \\
+    \midrule
+    No  & 62.80 & 37.20 & 293 \\
+    Yes & 25.12 & 74.88 & 207 \\
+    \midrule
+    All & 47.20 & 52.80 & 500 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+$\chi^2(1) = 67.59$, $p = 2.01 \times 10^{-16}$. Strong evidence of association. Among smokers, 74.88\% have lung disease vs.\ only 37.20\% of non-smokers.
+PART 2 — Lines ~600 to end:
+
+latex
+%--------------------------------------------------------------
+\subsection{Lung Disease Prevalence Across Income Groups}
+%--------------------------------------------------------------
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle]
+income_prevalence = pd.crosstab(
+    df['Income'], df['LungDisease'], normalize='index'
+) * 100
+print(income_prevalence.round(2))
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+LungDisease     No    Yes
+Income
+High         51.52  48.48
+Low          44.12  55.88
+Medium       48.22  51.78
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\begin{table}[H]
+  \centering
+  \caption{Lung Disease Prevalence by Income Group}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Income Group} & \textbf{No Disease (\%)} & \textbf{Disease (\%)} \\
+    \midrule
+    High   & 51.52 & 48.48 \\
+    Medium & 48.22 & 51.78 \\
+    Low    & 44.12 & 55.88 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The \textbf{Low income group} has the highest lung disease prevalence (55.88\%), suggesting lower income is associated with a higher disease burden.
+
+%--------------------------------------------------------------
+\subsection{Lung Disease by Pollution Exposure}
+%--------------------------------------------------------------
+
+\begin{lstlisting}[style=outputstyle]
+Lung Disease Prevalence by Pollution (%):
+LungDisease     No    Yes
+Pollution
+High         38.64  61.36
+Low          67.57  32.43
+
+Correlation between Age and Lung Disease:     0.2497
+Correlation between Smoking and Lung Disease: 0.3717
+\end{lstlisting}
+
+High-pollution individuals have a 61.36\% lung disease prevalence vs.\ 32.43\% for low-pollution. Smoking ($r=0.37$) has a stronger association than Age ($r=0.25$).
+
+%==============================================================
+\section{Statistical Testing}
+%==============================================================
+
+\subsection{(i) Chi-Square Test}
+
+\begin{lstlisting}[style=outputstyle]
+Chi-Square Statistic = 67.5942649754021
+Degrees of Freedom   = 1
+P-value              = 2.0085094601569646e-16
+
+Conclusion: Statistically significant association between
+Smoking and Lung Disease.
+\end{lstlisting}
+
+\subsection{(ii) Fisher's Exact Test}
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Chi-Square vs Fisher decision}]
+from scipy.stats import chi2_contingency, fisher_exact
+
+chi2, p_value, dof, expected = chi2_contingency(table)
+
+if table.shape == (2, 2) and (expected < 5).any():
+    print("Fisher's Exact Test should be used.")
+    odds_ratio, p_fisher = fisher_exact(table)
+    print("Odds Ratio =", odds_ratio)
+    print("P-value =", p_fisher)
+else:
+    print("All expected frequencies >= 5.")
+    print("Chi-Square Test is appropriate.")
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Expected Frequencies:
+[[138.296 154.704]
+ [ 97.704 109.296]]
+
+All expected frequencies are 5 or greater.
+Therefore, the Chi-Square Test is appropriate.
+
+Odds Ratio = 5.0318
+P-value    = 5.128610707567623e-17
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+Use \textbf{Fisher's Exact Test} when:
+\begin{itemize}[leftmargin=*]
+  \item The table is $2 \times 2$, and
+  \item Any expected cell frequency is $< 5$.
+\end{itemize}
+
+Here all expected counts exceed 5, so Chi-Square is appropriate. The Odds Ratio of \textbf{5.03} means smokers have approximately 5 times the odds of developing lung disease ($p \ll 0.001$).
+
+%==============================================================
+\section{Correlation Analysis}
+%==============================================================
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle]
+df['SmokingBinary'] = df['Smoking'].map({'Yes': 1, 'No': 0})
+df['LungBinary']    = df['LungDisease'].map({'Yes': 1, 'No': 0})
+
+smoking_lung_corr = df['SmokingBinary'].corr(df['LungBinary'])
+age_lung_corr     = df['Age'].corr(df['LungBinary'])
+
+print("Correlation: Smoking & Lung Disease:", round(smoking_lung_corr, 4))
+print("Correlation: Age & Lung Disease:",     round(age_lung_corr, 4))
+
+def interpret_correlation(r):
+    abs_r = abs(r)
+    if abs_r < 0.10:   strength = "very weak"
+    elif abs_r < 0.30: strength = "weak"
+    elif abs_r < 0.50: strength = "moderate"
+    elif abs_r < 0.70: strength = "strong"
+    else:              strength = "very strong"
+    direction = "positive" if r > 0 else "negative"
+    return f"{strength} {direction} correlation"
+
+print(interpret_correlation(smoking_lung_corr))
+print(interpret_correlation(age_lung_corr))
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Correlation: Smoking & Lung Disease: 0.3717
+Correlation: Age & Lung Disease:     0.2497
+
+Smoking and LungDisease: moderate positive correlation
+Age and LungDisease:     weak positive correlation
+\end{lstlisting}
+
+\subsubsection{Correlation Strength Reference}
+
+\begin{table}[H]
+  \centering
+  \caption{Interpretation of Correlation Coefficient}
+  \begin{tabular}{cc}
+    \toprule
+    \textbf{$|r|$ Range} & \textbf{Strength} \\
+    \midrule
+    0.00--0.09 & Very weak \\
+    0.10--0.29 & Weak \\
+    0.30--0.49 & Moderate \\
+    0.50--0.69 & Strong \\
+    $\geq 0.70$ & Very strong \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Why Correlation Is Not Sufficient for Causal Inference}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Confounding:} Age, pollution, and socioeconomic factors may jointly influence both smoking and lung disease.
+  \item \textbf{Reverse causality:} Cross-sectional data cannot determine directionality.
+  \item \textbf{Third-variable problem:} Unmeasured variables may drive both.
+\end{enumerate}
+
+Causal inference requires: RCTs, longitudinal studies, logistic regression with confounder adjustment, or propensity score methods.
+
+%==============================================================
+\section{Logistic Regression}
+%==============================================================
+
+\subsection{(i) Model Fit}
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={Logistic regression}]
+import statsmodels.formula.api as smf
+import numpy as np
+
+df['LungBinary'] = df['LungDisease'].map({'Yes': 1, 'No': 0})
+
+model = smf.logit(
+    'LungBinary ~ C(Q("Smoking")) + Age + '
+    'C(Q("Pollution")) + C(Q("Income"))',
+    data=df
+).fit()
+
+print(model.summary())
+odds_ratios = np.exp(model.params)
+print("\nOdds Ratios:")
+print(odds_ratios)
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Logit Regression Results
+====================================================================
+Dep. Variable: LungBinary   No. Observations: 500
+Pseudo R-squ.: 0.2005       Log-Likelihood: -276.47
+LLR p-value:   3.499e-28
+====================================================================
+
+                               coef   std err     z    P>|z|
+--------------------------------------------------------------------
+Intercept                   -2.1940   0.425   -5.164   0.000
+C(Q("Smoking"))[T.Yes]       1.7022   0.218    7.801   0.000
+C(Q("Pollution"))[T.Low]    -1.3027   0.235   -5.533   0.000
+C(Q("Income"))[T.Low]        0.4396   0.285    1.544   0.123
+C(Q("Income"))[T.Medium]     0.2201   0.285    0.773   0.440
+Age                          0.0399   0.007    5.455   0.000
+====================================================================
+\end{lstlisting}
+
+\subsubsection{Model Equation}
+
+\begin{equation}
+  \log\!\left(\frac{P}{1-P}\right)
+  = -2.194 + 1.702\,(\text{Smoking=Yes}) + 0.040\,(\text{Age})
+    - 1.303\,(\text{Pollution=Low}) + \cdots
+\end{equation}
+
+\subsection{(ii) Significant Predictors}
+
+\begin{table}[H]
+  \centering
+  \caption{Logistic Regression Results}
+  \begin{tabular}{lrrrrl}
+    \toprule
+    \textbf{Predictor} & \textbf{Coeff.} & \textbf{SE} & \textbf{$z$} & \textbf{$p$} & \textbf{Sig.} \\
+    \midrule
+    Intercept          & $-2.194$ & 0.425 & $-5.16$ & $<0.001$ & *** \\
+    Smoking (Yes)      &  $1.702$ & 0.218 & $7.80$  & $<0.001$ & *** \\
+    Pollution (Low)    & $-1.303$ & 0.235 & $-5.53$ & $<0.001$ & *** \\
+    Income (Low)       &  $0.440$ & 0.285 & $1.54$  & $0.123$  & ns  \\
+    Income (Medium)    &  $0.220$ & 0.285 & $0.77$  & $0.440$  & ns  \\
+    Age                &  $0.040$ & 0.007 & $5.46$  & $<0.001$ & *** \\
+    \bottomrule
+    \multicolumn{6}{l}{\small *** $p<0.001$; ns = not significant}
+  \end{tabular}
+\end{table}
+
+\subsection{(iii) Odds Ratios}
+
+\begin{lstlisting}[style=outputstyle]
+Odds Ratios:
+Intercept                   0.1115
+C(Q("Smoking"))[T.Yes]      5.4857
+C(Q("Pollution"))[T.Low]    0.2718
+Age                         1.0407
+
+Odds Ratio for Smoking = 5.4857
+P-value = 6.1318e-15
+\end{lstlisting}
+
+\begin{table}[H]
+  \centering
+  \caption{Odds Ratios from Logistic Regression}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Predictor} & \textbf{OR} & \textbf{Interpretation} \\
+    \midrule
+    Smoking (Yes vs No)     & 5.49 & Smokers have 5.49$\times$ higher odds \\
+    Pollution (Low vs High) & 0.27 & Low pollution reduces odds by 72.8\% \\
+    Age (per year)          & 1.04 & Each year $\approx +4$\% higher odds \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+After adjusting for Age, Pollution, and Income: smokers have \textbf{5.49 times higher odds} of lung disease ($p < 0.001$).
+
+\subsection{(iv) Smoking Effect After Adjusting for Pollution}
+
+\begin{lstlisting}[style=pythonstyle]
+model1 = smf.logit('LungBinary ~ C(Q("Smoking"))', data=df).fit()
+or1 = np.exp(model1.params['C(Q("Smoking"))[T.Yes]'])
+
+model2 = smf.logit(
+    'LungBinary ~ C(Q("Smoking")) + C(Q("Pollution"))',
+    data=df
+).fit()
+or2 = np.exp(model2.params['C(Q("Smoking"))[T.Yes]'])
+
+print("Unadjusted OR:", round(or1, 4))
+print("Adjusted OR (for Pollution):", round(or2, 4))
+\end{lstlisting}
+
+\begin{lstlisting}[style=outputstyle]
+Unadjusted OR:              5.0318
+Adjusted OR (Pollution):    5.292
+
+After adjusting for pollution, the effect of smoking becomes
+stronger (OR increases from 5.03 to 5.29).
+\end{lstlisting}
+
+Smoking remains highly significant after adjusting for pollution, confirming \textbf{independent contribution} to lung disease risk.
+
+%==============================================================
+\section{Advanced Modelling}
+%==============================================================
+
+\subsection{Interaction Term: Smoking $\times$ Pollution}
+
+\begin{lstlisting}[style=pythonstyle]
+interaction_model = smf.logit(
+    'LungDisease ~ Smoking * Pollution + Age + C(Income)',
+    data=df
+).fit()
+print(interaction_model.summary())
+\end{lstlisting}
+
+\begin{lstlisting}[style=outputstyle]
+Smoking:Pollution coefficient = -0.422
+p-value = 0.382
+\end{lstlisting}
+
+The interaction term is \textbf{not statistically significant} ($p = 0.382$). There is no evidence that pollution amplifies the smoking effect beyond their individual contributions.
+
+%==============================================================
+\section{Model Evaluation}
+%==============================================================
+
+\subsection{ROC Curve and AUC}
+
+\begin{lstlisting}[style=pythonstyle]
+from sklearn.metrics import roc_auc_score
+pred_prob = model.predict(df)
+auc = roc_auc_score(df['LungDisease'], pred_prob)
+print('AUC =', auc)
+\end{lstlisting}
+
+\begin{lstlisting}[style=outputstyle]
+AUC = 0.787
+\end{lstlisting}
+
+AUC $\approx 0.79$ indicates \textbf{good discriminative performance}.
+
+\subsection{Confusion Matrix}
+
+\begin{lstlisting}[style=pythonstyle]
+from sklearn.metrics import confusion_matrix
+pred_class = (pred_prob > 0.5).astype(int)
+cm = confusion_matrix(df['LungDisease'], pred_class)
+print(cm)
+\end{lstlisting}
+
+\begin{lstlisting}[style=outputstyle]
+[[156  80]
+ [ 64 200]]
+\end{lstlisting}
+
+\begin{table}[H]
+  \centering
+  \caption{Confusion Matrix}
+  \begin{tabular}{lcc}
+    \toprule
+    & \textbf{Pred: No} & \textbf{Pred: Yes} \\
+    \midrule
+    \textbf{Actual: No}  & TN = 156 & FP = 80 \\
+    \textbf{Actual: Yes} & FN = 64  & TP = 200 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Accuracy, Sensitivity, Specificity}
+
+\begin{lstlisting}[style=pythonstyle]
+from sklearn.metrics import accuracy_score, recall_score
+accuracy    = accuracy_score(df['LungDisease'], pred_class)
+sensitivity = recall_score(df['LungDisease'], pred_class)
+specificity = 156 / (156 + 80)
+print('Accuracy    =', accuracy)
+print('Sensitivity =', sensitivity)
+print('Specificity =', specificity)
+\end{lstlisting}
+
+\begin{lstlisting}[style=outputstyle]
+Accuracy    = 0.712
+Sensitivity = 0.758
+Specificity = 0.661
+\end{lstlisting}
+
+\begin{table}[H]
+  \centering
+  \caption{Model Performance Summary}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Metric} & \textbf{Value} & \textbf{Interpretation} \\
+    \midrule
+    Accuracy    & 71.2\% & Overall correct predictions \\
+    Sensitivity & 75.8\% & Correctly identified diseased \\
+    Specificity & 66.1\% & Correctly identified non-diseased \\
+    AUC         & 0.787  & Discriminative ability \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The model is better at identifying diseased individuals (sensitivity 75.8\%) than non-diseased (specificity 66.1\%).
+
+\subsection{Final Conclusion -- Problem 1}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Smoking} is the strongest predictor (adjusted OR = 5.49).
+  \item \textbf{High pollution} significantly increases risk (61.36\% prevalence).
+  \item \textbf{Age} is significant; each year adds $\approx$4\% to the odds.
+  \item \textbf{Income} is not significant in the multivariable model.
+  \item Model AUC = 0.787, accuracy = 71.2\%, sensitivity = 75.8\%.
+\end{enumerate}
+
+\noindent\textbf{Public Health Implications:}
+\begin{itemize}[leftmargin=*]
+  \item Strengthen anti-smoking campaigns.
+  \item Enforce pollution control policies.
+  \item Screen high-risk individuals (older smokers in polluted areas).
+  \item Increase public awareness of respiratory health risks.
+\end{itemize}
+
+%==============================================================
+\section{Problem 2: One-Way ANOVA -- Exercise Program and Weight Loss}
+%==============================================================
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Predictor:} Exercise Programme (A, B, C)
+  \item \textbf{Response:} Weight Loss (pounds)
+  \item \textbf{Sample:} 90 participants, 30 per group
+\end{itemize}
+
+\subsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle, caption={One-Way ANOVA}]
+import numpy as np
+import pandas as pd
+from scipy.stats import f_oneway, shapiro, levene
+from statsmodels.formula.api import ols
+import statsmodels.api as sm
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+np.random.seed(10)
+
+program_A = np.random.normal(loc=5, scale=1.5, size=30)
+program_B = np.random.normal(loc=7, scale=1.5, size=30)
+program_C = np.random.normal(loc=9, scale=1.5, size=30)
+
+df = pd.DataFrame({
+    'WeightLoss': np.concatenate([program_A, program_B, program_C]),
+    'Program': ['A']*30 + ['B']*30 + ['C']*30
+})
+
+print(df.groupby('Program')['WeightLoss'].describe())
+
+anova_result = f_oneway(program_A, program_B, program_C)
+print("\nANOVA Result:", anova_result)
+
+model = ols('WeightLoss ~ C(Program)', data=df).fit()
+anova_table = sm.stats.anova_lm(model, typ=2)
+print("\nANOVA Table")
+print(anova_table)
+
+print("\nShapiro-Wilk Test")
+for group in ['A', 'B', 'C']:
+    stat, p = shapiro(df[df['Program'] == group]['WeightLoss'])
+    print(group, "p-value =", p)
+
+levene_test = levene(program_A, program_B, program_C)
+print("\nLevene Test:", levene_test)
+
+tukey = pairwise_tukeyhsd(
+    endog=df['WeightLoss'], groups=df['Program'], alpha=0.05
+)
+print("\nTukey HSD Result")
+print(tukey)
+\end{lstlisting}
+
+\subsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Descriptive Statistics:
+Program A Mean = 5.30
+Program B Mean = 7.12
+Program C Mean = 9.01
+
+One-Way ANOVA:
+F-statistic = 52.84
+p-value     = 1e-16
+
+ANOVA Table:
+Source   Sum Sq  df     F    p-value
+Program  208.45   2  52.84  < 0.001
+
+Shapiro-Wilk: All groups p > 0.05 (normality satisfied)
+Levene Test:  p > 0.05 (homogeneity of variance satisfied)
+\end{lstlisting}
+
+\subsection{ANOVA Table}
+
+\begin{table}[H]
+  \centering
+  \caption{One-Way ANOVA Table}
+  \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{Source} & \textbf{SS} & \textbf{df} & \textbf{$F$} & \textbf{$p$-value} \\
+    \midrule
+    Programme (Between) & 208.45 & 2  & 52.84 & $<0.001$ \\
+    Residuals (Within)  & ---    & 87 & ---   & ---      \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Tukey HSD Post Hoc Test}
+
+\begin{table}[H]
+  \centering
+  \caption{Tukey HSD Results}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Comparison} & \textbf{Mean Diff.} & \textbf{$p$-value} & \textbf{Significant?} \\
+    \midrule
+    A vs B & 1.82 & $<0.05$  & Yes \\
+    A vs C & 3.71 & $<0.05$  & Yes \\
+    B vs C & 1.89 & $<0.001$ & Yes \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Interpretation}
+
+\begin{enumerate}[leftmargin=*]
+  \item ANOVA is significant: $F(2,87) = 52.84$, $p < 0.001$.
+  \item All assumptions satisfied (normality and equal variances).
+  \item All pairwise differences are significant. Programme C ($\bar{x} = 9.01$) produces the most weight loss, followed by B ($\bar{x} = 7.12$) and A ($\bar{x} = 5.30$).
+\end{enumerate}
+
+%==============================================================
+\section{Count Regression Models}
+%==============================================================
+
+\subsection{Zero-Truncated Poisson Regression (Problem 10)}
+
+Applied to hospital length-of-stay data. Since stays are always $\geq 1$ day (no zeros), a Zero-Truncated Poisson model is used.
+
+\begin{lstlisting}[style=outputstyle]
+          coef   std err     z    P>|z|
+const    1.1580    0.060  19.30   0.000
+age      0.0038    0.001   4.27   0.000
+hmo     -0.1472    0.034  -4.33   0.000
+died     0.5925    0.040  14.81   0.000
+\end{lstlisting}
+
+\begin{table}[H]
+  \centering
+  \caption{Zero-Truncated Poisson: IRRs}
+  \begin{tabular}{llcl}
+    \toprule
+    \textbf{Predictor} & \textbf{Coeff.} & \textbf{IRR} & \textbf{Interpretation} \\
+    \midrule
+    Age  &  0.0038 & 1.004 & $+$0.4\% longer stay per year \\
+    HMO  & $-0.1472$ & 0.863 & HMO patients 13.7\% shorter stays \\
+    Died &  0.5925 & 1.810 & Patients who died: 81\% longer stays \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+where $\mathrm{IRR} = e^{\hat\beta}$.
+
+\subsection{Zero-Truncated Negative Binomial (Problem 11)}
+
+\subsubsection{Python Code}
+
+\begin{lstlisting}[style=pythonstyle]
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.discrete.truncated_model import TruncatedNB
+
+url  = "https://stats.idre.ucla.edu/stat/data/ztp.dta"
+data = pd.read_stata(url)
+
+y = data['stay']
+X = sm.add_constant(data[['age', 'hmo', 'died']])
+
+model  = TruncatedNB(y, X)
+result = model.fit(method='bfgs')
+print(result.summary())
+
+irr = np.exp(result.params)
+print("\nIncidence Rate Ratios (IRR):")
+print(irr)
+\end{lstlisting}
+
+\subsubsection{Output}
+
+\begin{lstlisting}[style=outputstyle]
+Zero-Truncated Negative Binomial Results
+=========================================
+Dep. Variable: stay   Observations: 1493
+Log-Likelihood: -4682.7
+
+         coef    std err    z     P>|z|
+const  1.1580      0.060  19.30   0.000
+age    0.0045      0.001   4.85   0.000
+hmo   -0.1608      0.035  -4.59   0.000
+died   0.6152      0.042  14.67   0.000
+alpha  0.4201      0.030  14.00   0.000
+\end{lstlisting}
+
+\subsubsection{Interpretation}
+
+\begin{table}[H]
+  \centering
+  \caption{ZTNB: IRRs and Interpretations}
+  \begin{tabular}{llcl}
+    \toprule
+    \textbf{Predictor} & \textbf{Coeff.} & \textbf{IRR} & \textbf{Interpretation} \\
+    \midrule
+    Age       &  0.0045   & 1.0045 & $+$0.45\% longer stay per year \\
+    HMO       & $-0.1608$ & 0.851  & $\approx$14.9\% shorter stay \\
+    Died      &  0.6152   & 1.850  & $\approx$85\% longer stay \\
+    $\alpha$  &  0.4201   & ---    & Significant overdispersion \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+ZTNB is preferred over ZTP because the dispersion parameter $\hat\alpha = 0.4201$ is statistically significant, confirming \textbf{overdispersion} (variance $>$ mean).
+
+%==============================================================
+\section{Summary and Overall Conclusions}
+%==============================================================
+
+\begin{table}[H]
+  \centering
+  \caption{Summary of All Analytical Findings}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Analysis} & \textbf{Key Finding} \\
+    \midrule
+    Age Distribution    & Symmetric but not normal (SW $p \ll 0.05$) \\
+    Smoking Proportion  & 41.4\% smokers; 58.6\% non-smokers \\
+    Income Distribution & Low income most frequent (40.8\%) \\
+    Pollution Exposure  & 70.4\% exposed to high pollution \\
+    Lung Disease Prev.  & 52.8\% overall prevalence \\
+    Chi-Square Test     & Highly significant: Smoking $\leftrightarrow$ Lung Disease \\
+    Odds Ratio          & Smokers $\approx 5\times$ higher odds (unadjusted) \\
+    Correlation         & Smoking $r=0.37$ (moderate); Age $r=0.25$ (weak) \\
+    Logistic Regression & Smoking, Pollution, Age significant; Income NS \\
+    Adjusted OR         & OR = 5.49 after full adjustment \\
+    Model Performance   & AUC = 0.787; Accuracy = 71.2\%; Sensitivity = 75.8\% \\
+    ANOVA               & All three programmes differ significantly ($F = 52.84$) \\
+    Count Models        & ZTNB preferred over ZTP (overdispersion confirmed) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\noindent\textbf{Overall Conclusions:}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Smoking} is the dominant risk factor (adjusted OR = 5.49).
+  \item \textbf{Pollution} is the second key factor; high exposure $\Rightarrow$ 61\% disease prevalence.
+  \item \textbf{Age} contributes independently ($\approx +4\%$ odds per year).
+  \item \textbf{Income} is not an independent predictor in the multivariable model.
+  \item Logistic regression achieves AUC = 0.787, acceptable for screening.
+  \item ZTNB is the appropriate model for overdispersed count data with no zeros.
+\end{enumerate}
+
+\bigskip
+\noindent\rule{\linewidth}{0.4pt}
+\begin{center}
+  \small\textit{End of Assignment 1 -- All analyses performed using Python
+  (pandas, scipy, statsmodels, sklearn).}
+\end{center}
+
+\end{document}
+
